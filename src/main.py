@@ -3,10 +3,10 @@
 
 import uvicorn
 from fastapi import FastAPI
-import pickle
+# import pickle
 
 # Load model
-model = pickle.load(open('model_wine_quality.pkl', 'rb'))
+# model = pickle.load(open('model_wine_quality.pkl', 'rb'))
 
 # Instanciate FastAPI
 app = FastAPI()
