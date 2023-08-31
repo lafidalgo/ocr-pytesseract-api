@@ -14,13 +14,13 @@ app = FastAPI()
 # Define an endpoint
 @app.get("/")
 def central_function():
-    return {"Nome": "Luiz",
-            "Sobrenome": "Fidalgo"}
+    return {"name": "Luiz Augusto",
+            "surname": "Fidalgo"}
 
 # Define other endpoint
 @app.get("/predict")
 def prediction_function():
-    return {"Test": "Prediction"}
+    return {"test": "Prediction"}
 
 if __name__ == "__main__":
     # Start FastAPI
