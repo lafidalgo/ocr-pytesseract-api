@@ -1,29 +1,43 @@
-# https://www.youtube.com/watch?v=0TFWtfFY87U&ab_channel=NeuralNine
-# https://www.youtube.com/watch?v=sXHjYjV-36I
+from fastapi import FastAPI, UploadFile, File, Depends
+from pydantic import BaseModel
+from typing import List, Optional
+from PIL import Image
+import pytesseract
+import numpy as np
+from io import BytesIO
 
-import uvicorn
-from fastapi import FastAPI
-# import pickle
-
-# Load model
-# model = pickle.load(open('model_wine_quality.pkl', 'rb'))
-
-# Instanciate FastAPI
 app = FastAPI()
 
-# Define an endpoint
+class Params(BaseModel):
+    output_type: Optional[str] = "string"
+    lang: Optional[str] = "eng"
+    config: Optional[str] = "--psm 6"
+    nice: Optional[int] = 0 
+    timeout: Optional[int] = 0
+
 @app.get("/")
-def central_function():
-    return {"name": "Luiz Augusto",
-            "surname": "Fidalgo"}
+def home():
+    return "OCR Pytesseract with FastAPI"
 
-# Define other endpoint
-@app.get("/predict")
-def prediction_function():
-    return {"test": "Prediction"}
+@app.post("/ocr/")
+async def submit(params: Params = Depends(), files: List[UploadFile] = File(...)):
+    results = {}
 
-"""
-if __name__ == "__main__":
-    # Start FastAPI
-    uvicorn.run(app, port=8000, host="0.0.0.0")
-"""
+    for file in files:
+        # Read the image file as bytes
+        img_data = await file.read()
+
+        # Convert the image bytes to a PIL Image
+        img = Image.open(BytesIO(img_data))
+
+        # Apply tesseract
+        ocr = pytesseract.image_to_string(np.array(img), lang=params.lang,
+                                        config=params.config,
+                                        output_type=params.output_type,
+                                        nice=params.nice,
+                                        timeout=params.timeout)
+        
+        results[file.filename] = ocr
+
+    return {"results": results,
+            "params": params}
