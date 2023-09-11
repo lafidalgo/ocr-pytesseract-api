@@ -10,5 +10,5 @@ jobs:
       - name: Build and push the image
         run: |
           docker login --username lafidalgo --password ${{ secrets.GH_PAT }} ghcr.io
-          docker build . -tag ghcr.io/lafidalgo/api-ghcr-test:latest
+          docker build -t ghcr.io/lafidalgo/api-ghcr-test:latest .
           docker push ghcr.io/lafidalgo/api-ghcr-test:latest
