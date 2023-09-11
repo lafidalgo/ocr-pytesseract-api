@@ -44,15 +44,3 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-      - name: Set Docker image visibility to public
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-          USERNAME: ${{ github.actor }}
-          REPOSITORY: ${{ github.repository }}
-        run: |
-          # Set the image visibility to public (for GitHub Packages)
-          curl -X PATCH -H "Accept: application/vnd.github.package-deletes-preview+json" \
-            -H "Authorization: token $GH_PAT" \
-            https://api.github.com/repos/$USERNAME/$REPOSITORY/packages/container/$IMAGE_NAME \
-            -d '{"visibility":"public"}'
