@@ -15,7 +15,7 @@ app = FastAPI()
 @app.get("/")
 def central_function():
     return {"name": "Luiz Augusto",
-            "surname": "Fidalgo Dantas"}
+            "surname": "Fidalgo"}
 
 # Define other endpoint
 @app.get("/predict")
