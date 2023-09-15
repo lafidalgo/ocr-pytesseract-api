@@ -7,6 +7,9 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app
 
+# Install system dependencies for opencv
+RUN apt-get update && apt-get install libgl1
+
 # Install system dependencies for pytesseract
 RUN apt-get update && apt-get install -y libtesseract-dev tesseract-ocr
 
