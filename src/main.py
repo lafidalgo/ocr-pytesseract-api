@@ -5,6 +5,7 @@ from PIL import Image
 import pytesseract
 import numpy as np
 from io import BytesIO
+import cv2
 
 app = FastAPI()
 
@@ -30,8 +31,34 @@ async def submit(params: Params = Depends(), files: List[UploadFile] = File(...)
         # Convert the image bytes to a PIL Image
         img = Image.open(BytesIO(img_data))
 
+        # Convert the PIL Image to an OpenCV image (numpy array)
+        img_cv2 = np.array(img)
+
+        # Convert the image to grayscale (1 channel)
+        img_cv2 = cv2.cvtColor(img_cv2, cv2.COLOR_BGR2GRAY)
+
+        # Up-sample
+        img_cv2 = cv2.resize(img_cv2, (0, 0), fx=2, fy=2)
+
+        # Apply dilation and erosion to remove some noise
+        kernel = np.ones((1, 1), np.uint8)
+        img_cv2 = cv2.dilate(img_cv2, kernel, iterations=1)
+        img_cv2 = cv2.erode(img_cv2, kernel, iterations=1)
+
+        # Apply blur to smooth out the edges
+        img_cv2 = cv2.GaussianBlur(img_cv2, (5, 5), 0)
+
+        # Apply threshold to get image with only b&w (binarization)
+        img_cv2 = cv2.threshold(img_cv2, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+
+        # Invert the image
+        img_cv2 = cv2.bitwise_not(img_cv2)
+
+        # Down-sample
+        img_cv2 = cv2.resize(img_cv2, (0, 0), fx=0.5, fy=0.5)
+
         # Apply tesseract
-        ocr = pytesseract.image_to_string(np.array(img), lang=params.lang,
+        ocr = pytesseract.image_to_string(img_cv2, lang=params.lang,
                                         config=params.config,
                                         output_type=params.output_type,
                                         nice=params.nice,
