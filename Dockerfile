@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . /app
 
 # Install system dependencies for opencv
-RUN apt-get update && apt-get install libgl1
+RUN apt-get update && apt-get install -y libgl1
 
 # Install system dependencies for pytesseract
 RUN apt-get update && apt-get install -y libtesseract-dev tesseract-ocr
