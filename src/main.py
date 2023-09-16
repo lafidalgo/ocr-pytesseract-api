@@ -36,7 +36,8 @@ async def submit(params: Params = Depends(), files: List[UploadFile] = File(...)
         img_cv2 = np.array(img)
 
         # Convert the image to grayscale (1 channel)
-        img_cv2 = cv2.cvtColor(img_cv2, cv2.COLOR_BGR2GRAY)
+        if len(img_cv2.shape) >= 3:
+            img_cv2 = cv2.cvtColor(img_cv2, cv2.COLOR_BGR2GRAY)
 
         # Up-sample
         img_cv2 = cv2.resize(img_cv2, (0, 0), fx=2, fy=2)
